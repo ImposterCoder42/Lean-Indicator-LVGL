@@ -6,12 +6,10 @@
 #include "lv_conf.h"
 #include "CST816S.h"
 #include "QMI8658.h"
-#include "image.h"
 #include "logo.h"
 #include "LeanUI.h"
 #include "ui.h"
 #include "BootAnimation.h"
-#include "Marty_30.h"
 #include <Preferences.h>
 #include <string>
 

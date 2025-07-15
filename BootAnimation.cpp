@@ -3,8 +3,8 @@
 #include "LeanUI.h"
 #include <lvgl.h>
 #include "lv_conf.h"
-#include "image.h"
-#include "Marty_30.h"
+// #include "marty_30.h"
+#include "awergy.h"
 #include <string>
 
 
@@ -38,7 +38,7 @@ void play_boot_animation() {
     lv_label_set_text(max_label, buf);
     lv_obj_set_style_text_align(max_label, LV_TEXT_ALIGN_CENTER, 0);
     lv_obj_center(max_label);
-    lv_obj_set_style_text_font(max_label, &Marty_30, 0);  // Apply your custom font
+    lv_obj_set_style_text_font(max_label, &Awergy, 0);  // Apply your custom font
     lv_obj_set_style_text_color(max_label, lv_color_hex(0xFFFFFF), 0);
 
     // --- Step 2: After 4.5 sec, remove label and start UI + animation ---

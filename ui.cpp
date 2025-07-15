@@ -1,8 +1,10 @@
 #include "ui.h"
 #include <lvgl.h>
 #include "lv_conf.h"
-#include "image.h"
-#include "Marty_30.h"
+// #include "indian_scout.h"
+// #include "marty_30.h"
+#include "sport_green.h"
+#include "awergy.h"
 #include <Preferences.h> 
 #include "LeanUI.h"
 
@@ -24,9 +26,9 @@ void create_arc() {
 }
 
 void create_image() {
-  extern const lv_img_dsc_t image;
+  extern const lv_img_dsc_t sport_green;
     img = lv_img_create(lv_scr_act());
-    lv_img_set_src(img, &image);
+    lv_img_set_src(img, &sport_green);
     lv_obj_align(img, LV_ALIGN_CENTER, 0, -10);
     lv_obj_set_size(img, 110 , 171);
     lv_img_set_pivot(img, 110 / 2, 171);
@@ -45,7 +47,7 @@ void create_label() {
   label = lv_label_create(lv_scr_act());
   lv_label_set_text(label, "0 DEG");
   lv_obj_align(label, LV_ALIGN_BOTTOM_MID, 0, -20);  
-  lv_obj_set_style_text_font(label, &Marty_30, 0);    
+  lv_obj_set_style_text_font(label, &Awergy, 0);    
   lv_obj_set_style_text_color(label, lv_color_hex(0xFFFFFF), 0);
 }
 
