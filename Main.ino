@@ -21,12 +21,16 @@
 #include <BLEServer.h>
 #include <BLEUtils.h>
 #include <BLE2902.h>
+#include <ArduinoJson.h>
 
-BLECharacteristic *pCharacteristic;
+BLECharacteristic *pAngleCharacteristic;
 bool deviceConnected = false;
 
-#define SERVICE_UUID        "4fafc201-1fb5-459e-8fcc-c5c9c331914b"
-#define CHARACTERISTIC_UUID "beb5483e-36e1-4688-b7f5-ea07361b26a8"
+#define SERVICE_UUID_LEAN_ANGLE  "4fafc201-1fb5-459e-8fcc-c5c9c331914b"
+#define CHAR_UUID_LEAN_ANGLE     "beb5483e-36e1-4688-b7f5-ea07361b26a8"
+
+#define SERVICE_UUID_SETTINGS    "9703c1da-f099-4fb7-b7e3-6ac16aae762a"
+#define CHAR_UUID_SETTINGS       "c8bfda4a-3a28-4ba0-8df5-cbf1a7214cb9"
 
 class MyServerCallbacks : public BLEServerCallbacks {
   void onConnect(BLEServer* pServer) {
@@ -68,6 +72,22 @@ class MySecurity : public BLESecurityCallbacks {
   }
 };
 
+class SettingsCallbacks : public BLECharacteristicCallbacks {
+  void onWrite(BLECharacteristic* pSettingsCharacteristic) override {
+    std::string value = pSettingsCharacteristic->getValue();
+    Serial.println("Received settings over BLE:");
+    Serial.println(value.c_str());
+
+    // Parse JSON
+    StaticJsonDocument<512> doc;
+    DeserializationError error = deserializeJson(doc, value);
+    if (error) {
+      Serial.print("deserializeJson() failed: ");
+      Serial.println(error.c_str());
+      return;
+    }
+  }
+};
 
 
 
@@ -128,26 +148,34 @@ void setup() {
   BLEServer *pServer = BLEDevice::createServer();
   pServer->setCallbacks(new MyServerCallbacks());
 
-  BLEService *pService = pServer->createService(SERVICE_UUID);
-  pCharacteristic = pService->createCharacteristic(
-    CHARACTERISTIC_UUID,
-    BLECharacteristic::PROPERTY_READ | 
-    BLECharacteristic::PROPERTY_WRITE | 
+  // --- 1. Settings Service ---
+  BLEService *settingsService = pServer->createService(SERVICE_UUID_SETTINGS);
+  BLECharacteristic *settingsCharacteristic = settingsService->createCharacteristic(
+    CHAR_UUID_SETTINGS,
+    BLECharacteristic::PROPERTY_WRITE
+  );
+  settingsCharacteristic->setCallbacks(new SettingsCallbacks());
+  settingsService->start();
+
+  // --- 2. Lean Angle Stream Service ---
+  BLEService *streamService = pServer->createService(SERVICE_UUID_LEAN_ANGLE);
+  pAngleCharacteristic = streamService->createCharacteristic(
+    CHAR_UUID_LEAN_ANGLE,
     BLECharacteristic::PROPERTY_NOTIFY
   );
+  pAngleCharacteristic->addDescriptor(new BLE2902()); // Enable notifications
+  streamService->start();
 
-  pCharacteristic->addDescriptor(new BLE2902());
-
-  pCharacteristic->setValue("Hello BLE");
+  // BLE Security 
   BLEDevice::setEncryptionLevel(ESP_BLE_SEC_ENCRYPT);
   BLEDevice::setSecurityCallbacks(new MySecurity());
 
   BLESecurity *pSecurity = new BLESecurity();
   pSecurity->setAuthenticationMode(ESP_LE_AUTH_REQ_SC_MITM_BOND);
-  pSecurity->setCapability(ESP_IO_CAP_OUT);  // or NONE for no passkey
+  pSecurity->setCapability(ESP_IO_CAP_OUT);
   pSecurity->setInitEncryptionKey(ESP_BLE_ENC_KEY_MASK | ESP_BLE_ID_KEY_MASK);
-  pSecurity->setStaticPIN(1111);
-  pService->start();
+  pSecurity->setStaticPIN(123456);
+
   pServer->getAdvertising()->start();
 
   Serial.println("BLE server is running...");
@@ -220,8 +248,8 @@ void loop() {
     };
 
     SensorData data = {angle};
-    pCharacteristic->setValue((uint8_t*)&data, sizeof(data));
-    pCharacteristic->notify();
+    pAngleCharacteristic->setValue((uint8_t*)&data, sizeof(data));
+    pAngleCharacteristic->notify();
   }
 
   check_and_set_max_angles(angle, accX);
