@@ -10,6 +10,7 @@
 #include "LeanUI.h"
 #include "ui.h"
 #include "BootAnimation.h"
+#include "GaugeSettingsUtils.h" 
 #include <Preferences.h>
 #include <string>
 
@@ -25,6 +26,7 @@
 
 BLECharacteristic *pAngleCharacteristic;
 bool deviceConnected = false;
+GaugeSettings s = loadGaugeSettings();
 
 #define SERVICE_UUID_LEAN_ANGLE  "4fafc201-1fb5-459e-8fcc-c5c9c331914b"
 #define CHAR_UUID_LEAN_ANGLE     "beb5483e-36e1-4688-b7f5-ea07361b26a8"
@@ -86,6 +88,29 @@ class SettingsCallbacks : public BLECharacteristicCallbacks {
       Serial.println(error.c_str());
       return;
     }
+
+    GaugeSettings settings;
+    settings.backgroundNormalColor = doc["backgroundNormalColor"] | "#313131";
+    settings.backgroundWarningColor = doc["backgroundWarningColor"] | "#800000C8";
+    settings.arcMainColor = doc["arcMainColor"] | "#004609D1";
+    settings.arcIndicatorColor = doc["arcIndicatorColor"] | "#FFFFFF73";
+    settings.fontColor = doc["fontColor"] | "#FFFFFF";
+    settings.currentFont = doc["currentFont"] | "marty-30";
+    settings.currentBike = doc["currentBike"] | "indian_scout";
+    settings.maxiumSafeAngle = doc["maxiumSafeAngle"] | 29.0f;
+
+    saveGaugeSettings(
+      settings.backgroundNormalColor.c_str(),
+      settings.backgroundWarningColor.c_str(),
+      settings.arcMainColor.c_str(),
+      settings.arcIndicatorColor.c_str(),
+      settings.fontColor.c_str(),
+      settings.currentFont.c_str(),
+      settings.currentBike.c_str(),
+      settings.maxiumSafeAngle
+    );
+
+    rebuildUIFromSettings();
   }
 };
 
@@ -141,6 +166,7 @@ lv_obj_t * screen;
 lv_obj_t * arc;
 lv_obj_t * img;
 lv_obj_t* max_label;
+
 
 void setup() {
   Serial.begin(115200);
@@ -215,10 +241,12 @@ void setup() {
   QMI8658_init();
   
   // // SCREEN BACKGROUND
+  
   lv_disp_set_theme(lv_disp_get_default(), NULL);
   screen = lv_scr_act();
   lv_obj_clean(screen);
-  lv_obj_set_style_bg_color(screen, lv_color_hex(0x161616), LV_PART_MAIN | LV_STATE_DEFAULT);
+  lv_color_t backgroundNormalColor = hexToColor(s.backgroundNormalColor);
+  lv_obj_set_style_bg_color(screen, backgroundNormalColor, LV_PART_MAIN | LV_STATE_DEFAULT);
   create_UI();              
   do_angle_reset();
   play_boot_animation();

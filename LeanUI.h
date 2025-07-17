@@ -3,6 +3,7 @@
 
 #include <lvgl.h>
 #include <Arduino.h>
+#include "GaugeSettingsUtils.h"
 
 
 // External LVGL objects (you must define them in your main file)

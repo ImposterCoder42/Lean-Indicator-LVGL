@@ -3,6 +3,7 @@
 #include <Preferences.h>
 #include <string>
 #include "Preferences.h"
+#include "GaugeSettingsUtils.h"
 
 int max_angle_left = 0;
 int max_angle_right = 0;
@@ -15,9 +16,11 @@ static const unsigned long HOLD_DURATION = 200;
 
 Preferences preferences;
 
+
 static int maxAngleThreshold = 29; // The Bikes Max Angle
 
 void update_UI(int angle) {
+    GaugeSettings s = loadGaugeSettings();
     // Update Arc
     lv_arc_set_value(arc, angle);
     // Update Image
@@ -33,10 +36,13 @@ void update_UI(int angle) {
     if (abs(angle) > maxAngleThreshold) {
         // Preferences prefs;
         lv_obj_set_style_text_color(label, lv_color_hex(0xFF3B30), 0);  // Red
-        lv_obj_set_style_bg_color(screen, lv_color_hex(0xaa3B30), LV_PART_MAIN | LV_STATE_DEFAULT);
+        lv_color_t backgroundWarningColor = hexToColor(s.backgroundWarningColor);
+        lv_obj_set_style_bg_color(screen, backgroundWarningColor, LV_PART_MAIN | LV_STATE_DEFAULT);
     } else {
-        lv_obj_set_style_text_color(label, lv_color_hex(0xFFFFFF), 0);
-        lv_obj_set_style_bg_color(screen, lv_color_hex(0x161616), LV_PART_MAIN | LV_STATE_DEFAULT);
+        lv_color_t fontColor = hexToColor(s.fontColor);
+        lv_obj_set_style_text_color(label, fontColor, 0);
+        lv_color_t backgroundNormalColor = hexToColor(s.backgroundNormalColor);
+        lv_obj_set_style_bg_color(screen, backgroundNormalColor, LV_PART_MAIN | LV_STATE_DEFAULT);
     }
 }
 

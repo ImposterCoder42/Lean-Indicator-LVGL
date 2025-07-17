@@ -7,8 +7,11 @@
 #include "awergy.h"
 #include <Preferences.h> 
 #include "LeanUI.h"
+#include "GaugeSettingsUtils.h"
 
-void create_arc() {
+
+
+void create_arc(const GaugeSettings& s) {
   arc = lv_arc_create(lv_scr_act());
   lv_obj_set_size(arc, 230, 230);
   lv_obj_center(arc);
@@ -17,8 +20,10 @@ void create_arc() {
   lv_arc_set_range(arc, -90, 90);
   lv_arc_set_bg_angles(arc, 160, 20);
   lv_obj_remove_style(arc, NULL, LV_PART_KNOB);
-  lv_obj_set_style_arc_color(arc, lv_color_hex(0x77777777), LV_PART_MAIN | LV_STATE_DEFAULT);    
-  lv_obj_set_style_arc_color(arc, lv_color_hex(0x7700FF00), LV_PART_INDICATOR | LV_STATE_DEFAULT);    
+  lv_color_t arcMainColor = hexToColor(s.arcMainColor);
+  lv_obj_set_style_arc_color(arc, arcMainColor, LV_PART_MAIN | LV_STATE_DEFAULT);    
+  lv_color_t arcIndicatorColor = hexToColor(s.arcIndicatorColor);
+  lv_obj_set_style_arc_color(arc, arcIndicatorColor, LV_PART_INDICATOR | LV_STATE_DEFAULT);    
   lv_obj_set_style_arc_opa(arc, LV_OPA_30, LV_PART_MAIN);                                              
   lv_obj_set_style_arc_opa(arc, LV_OPA_40, LV_PART_INDICATOR);                                         
   lv_obj_set_style_arc_width(arc, 7, LV_PART_INDICATOR);                                               
@@ -43,16 +48,18 @@ void create_image() {
     });
     lv_anim_start(&a);
 }
-void create_label() {
+void create_label(const GaugeSettings& s) {
   label = lv_label_create(lv_scr_act());
   lv_label_set_text(label, "0 DEG");
   lv_obj_align(label, LV_ALIGN_BOTTOM_MID, 0, -20);  
   lv_obj_set_style_text_font(label, &Awergy, 0);    
-  lv_obj_set_style_text_color(label, lv_color_hex(0xFFFFFF), 0);
+  lv_color_t fontColor = hexToColor(s.fontColor);
+  lv_obj_set_style_text_color(label, fontColor, 0);
 }
 
 void create_UI() {
+  GaugeSettings s = loadGaugeSettings();
   create_image();
-  create_arc();
-  create_label();
+  create_arc(s);
+  create_label(s);
 }
