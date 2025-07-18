@@ -1,15 +1,31 @@
 #include "ui.h"
 #include <lvgl.h>
 #include "lv_conf.h"
-// #include "indian_scout.h"
-// #include "marty_30.h"
-#include "sport_green.h"
-#include "awergy.h"
 #include <Preferences.h> 
 #include "LeanUI.h"
 #include "GaugeSettingsUtils.h"
+#include "indian_scout.h"
+#include "sport_green.h"
+#include "sport_red_blue_white.h"
+#include "adventure_gray.h"
+#include "bagger_black.h"
+#include "marty.h"
+#include "awergy.h"
+#include "bloomira.h"
+#include "super_crumble.h"
+#include "wablo.h"
 
+extern const lv_font_t marty;
+extern const lv_font_t Awergy;
+extern const lv_font_t Bloomira;
+extern const lv_font_t Super_Crumble;
+extern const lv_font_t Wablo;
 
+extern const lv_img_dsc_t indian_scout;
+extern const lv_img_dsc_t sport_green;
+extern const lv_img_dsc_t sport_red_blue_white;
+extern const lv_img_dsc_t adventure_gray;
+extern const lv_img_dsc_t bagger_black;
 
 void create_arc(const GaugeSettings& s) {
   arc = lv_arc_create(lv_scr_act());
@@ -30,10 +46,21 @@ void create_arc(const GaugeSettings& s) {
   lv_obj_set_style_arc_width(arc, 5, LV_PART_MAIN);                                                    
 }
 
-void create_image() {
-  extern const lv_img_dsc_t sport_green;
+void create_image(const GaugeSettings& s) {
     img = lv_img_create(lv_scr_act());
-    lv_img_set_src(img, &sport_green);
+    if (s.currentBike == "factory bike") {
+      lv_img_set_src(img, &indian_scout);
+    } else if (s.currentBike == "bike 2") {
+      lv_img_set_src(img, &sport_green);
+    } else if (s.currentBike == "bike 3") {
+      lv_img_set_src(img, &sport_red_blue_white);
+    } else if (s.currentBike == "bike 4") {
+      lv_img_set_src(img, &adventure_gray);
+    } else if (s.currentBike == "bike 5") {
+      lv_img_set_src(img, &bagger_black);
+    } else { // catch all
+      lv_img_set_src(img, &indian_scout);
+    }
     lv_obj_align(img, LV_ALIGN_CENTER, 0, -10);
     lv_obj_set_size(img, 110 , 171);
     lv_img_set_pivot(img, 110 / 2, 171);
@@ -48,18 +75,32 @@ void create_image() {
     });
     lv_anim_start(&a);
 }
+
+
 void create_label(const GaugeSettings& s) {
   label = lv_label_create(lv_scr_act());
   lv_label_set_text(label, "0 DEG");
-  lv_obj_align(label, LV_ALIGN_BOTTOM_MID, 0, -20);  
-  lv_obj_set_style_text_font(label, &Awergy, 0);    
+  lv_obj_align(label, LV_ALIGN_BOTTOM_MID, 0, -20);
   lv_color_t fontColor = hexToColor(s.fontColor);
   lv_obj_set_style_text_color(label, fontColor, 0);
+  if (s.currentFont == "factory font") {
+    lv_obj_set_style_text_font(label, &marty, 0);    
+  } else if (s.currentFont == "font 2") {
+    lv_obj_set_style_text_font(label, &Awergy, 0);    
+  } else if (s.currentFont == "font 3") {
+    lv_obj_set_style_text_font(label, &Bloomira, 0);    
+  } else if (s.currentFont == "font 4") {
+    lv_obj_set_style_text_font(label, &Super_Crumble, 0);    
+  } else if (s.currentFont == "font 5") {
+    lv_obj_set_style_text_font(label, &Wablo, 0);    
+  } else { // catch all
+    lv_obj_set_style_text_font(label, &marty, 0);    
+  }
 }
 
 void create_UI() {
   GaugeSettings s = loadGaugeSettings();
-  create_image();
+  create_image(s);
   create_arc(s);
   create_label(s);
 }

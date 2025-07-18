@@ -75,7 +75,7 @@ void rebuildUIFromSettings() {
 
   GaugeSettings s = loadGaugeSettings();
 
-  create_image();
+  create_image(s);
   create_arc(s);
   create_label(s);
 
@@ -90,6 +90,7 @@ const char* preLoadedFonts[] = { // Files Names
   "super_crumble",
   "wablo",
 };
+const int NUM_FONTS = sizeof(preLoadedFonts) / sizeof(preLoadedFonts[0]);
 
 const char* preLoadedBikes[] = { // Files Names
   "indian_scout",
@@ -98,3 +99,4 @@ const char* preLoadedBikes[] = { // Files Names
   "sport_green",
   "sport_red_blue_white",
 };
+const int NUM_BIKES = sizeof(preLoadedBikes) / sizeof(preLoadedBikes[0]);

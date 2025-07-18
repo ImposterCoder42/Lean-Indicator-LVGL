@@ -16,6 +16,12 @@ void saveGaugeSettings(
   const char* bike,
   float maxAngle
 );
+
+extern const char* preLoadedFonts[];
+extern const int NUM_FONTS;
+
+extern const char* preLoadedBikes[];
+extern const int NUM_BIKES;
 void applyGaugeSettings(const GaugeSettings& s);
 lv_color_t hexToColor(const String& hex);
 void rebuildUIFromSettings();
