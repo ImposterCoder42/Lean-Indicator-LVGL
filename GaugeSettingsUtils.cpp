@@ -36,12 +36,12 @@ GaugeSettings loadGaugeSettings() {
   GaugeSettings s;
   prefs.begin("gauge", true);
   s.backgroundNormalColor = prefs.getString("bgNormal", "#313131");
-  s.backgroundWarningColor = prefs.getString("bgWarning", "#800000C8");
-  s.arcMainColor = prefs.getString("arcMain", "#004609D1");
-  s.arcIndicatorColor = prefs.getString("arcInd", "#FFFFFF73");
-  s.fontColor = prefs.getString("fontColor", "#FF11FF");
+  s.backgroundWarningColor = prefs.getString("bgWarning", "#FF771616");
+  s.arcMainColor = prefs.getString("arcMain", "#FF9A9A9A");
+  s.arcIndicatorColor = prefs.getString("arcInd", "#FF16DD16");
+  s.fontColor = prefs.getString("fontColor", "#FFFFFF");
   s.currentFont = prefs.getString("font", "marty");
-  s.currentBike = prefs.getString("bike", "21 INDIAN SCOUT");
+  s.currentBike = prefs.getString("bike", "indian_scout");
   s.maxiumSafeAngle = prefs.getFloat("maxAngle", 29.0f);
   prefs.end();
   return s;
@@ -78,7 +78,15 @@ void rebuildUIFromSettings() {
   create_image(s);
   create_arc(s);
   create_label(s);
+}
 
+void factoryResetUI () {
+  Preferences prefs;
+  prefs.begin("gauge", false);
+  prefs.begin("gauge", false);
+  prefs.clear();
+  prefs.end();
+  Serial.println("UI Reset Completed");
 }
 
 

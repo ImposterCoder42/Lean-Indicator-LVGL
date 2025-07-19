@@ -48,22 +48,43 @@ void create_arc(const GaugeSettings& s) {
 
 void create_image(const GaugeSettings& s) {
     img = lv_img_create(lv_scr_act());
+
     if (s.currentBike == "factory bike") {
       lv_img_set_src(img, &indian_scout);
+      lv_obj_align(img, LV_ALIGN_CENTER, 0, -10);
+      lv_obj_set_size(img, 110 , 171);
+      lv_img_set_pivot(img, 110 / 2, 171);
+    
     } else if (s.currentBike == "bike 2") {
       lv_img_set_src(img, &sport_green);
+      lv_obj_align(img, LV_ALIGN_CENTER, 0, -10);
+      lv_obj_set_size(img, 110 , 151);
+      lv_img_set_pivot(img, 110 / 2, 151);
+    
     } else if (s.currentBike == "bike 3") {
       lv_img_set_src(img, &sport_red_blue_white);
+      lv_obj_align(img, LV_ALIGN_CENTER, 0, -10);
+      lv_obj_set_size(img, 110 , 171);
+      lv_img_set_pivot(img, 110 / 2, 171);
+    
     } else if (s.currentBike == "bike 4") {
       lv_img_set_src(img, &adventure_gray);
+      lv_obj_align(img, LV_ALIGN_CENTER, 0, -10);
+      lv_obj_set_size(img, 110 , 171);
+      lv_img_set_pivot(img, 110 / 2, 171);
+    
     } else if (s.currentBike == "bike 5") {
       lv_img_set_src(img, &bagger_black);
+      lv_obj_align(img, LV_ALIGN_CENTER, 0, 0);
+      lv_obj_set_size(img, 110 , 151);
+      lv_img_set_pivot(img, 110 / 2, 151);
+    
     } else { // catch all
       lv_img_set_src(img, &indian_scout);
+      lv_obj_align(img, LV_ALIGN_CENTER, 0, -10);
+      lv_obj_set_size(img, 110 , 171);
+      lv_img_set_pivot(img, 110 / 2, 171);
     }
-    lv_obj_align(img, LV_ALIGN_CENTER, 0, -10);
-    lv_obj_set_size(img, 110 , 171);
-    lv_img_set_pivot(img, 110 / 2, 171);
     // Smooth Rotate Anime
     lv_anim_t a;
     lv_anim_init(&a);
@@ -90,7 +111,7 @@ void create_label(const GaugeSettings& s) {
   } else if (s.currentFont == "font 3") {
     lv_obj_set_style_text_font(label, &Bloomira, 0);    
   } else if (s.currentFont == "font 4") {
-    lv_obj_set_style_text_font(label, &Super_Crumble, 0);    
+    lv_obj_set_style_text_font(label, &Super_Crumble, 0);  
   } else if (s.currentFont == "font 5") {
     lv_obj_set_style_text_font(label, &Wablo, 0);    
   } else { // catch all

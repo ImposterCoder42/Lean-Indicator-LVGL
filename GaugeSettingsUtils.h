@@ -25,5 +25,6 @@ extern const int NUM_BIKES;
 void applyGaugeSettings(const GaugeSettings& s);
 lv_color_t hexToColor(const String& hex);
 void rebuildUIFromSettings();
+void factoryResetUI();
 
 #endif

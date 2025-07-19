@@ -27,6 +27,7 @@
 BLECharacteristic *pAngleCharacteristic;
 bool deviceConnected = false;
 GaugeSettings s = loadGaugeSettings();
+Preferences prefs;
 
 #define SERVICE_UUID_LEAN_ANGLE  "4fafc201-1fb5-459e-8fcc-c5c9c331914b"
 #define CHAR_UUID_LEAN_ANGLE     "beb5483e-36e1-4688-b7f5-ea07361b26a8"
@@ -80,37 +81,50 @@ class SettingsCallbacks : public BLECharacteristicCallbacks {
     Serial.println("Received settings over BLE:");
     Serial.println(value.c_str());
 
-    // Parse JSON
-    StaticJsonDocument<512> doc;
-    DeserializationError error = deserializeJson(doc, value);
-    if (error) {
-      Serial.print("deserializeJson() failed: ");
-      Serial.println(error.c_str());
-      return;
+    if (value == "PR_RESET"){
+      prefs.begin("lean_data", false);
+      prefs.clear();
+      prefs.end();
+    } else if (value == "FACTORY_RESET"){
+      prefs.begin("lean_data", false);
+      prefs.clear();
+      prefs.end();
+
+      factoryResetUI();
+      rebuildUIFromSettings();
+    } else {
+      // Parse JSON
+      StaticJsonDocument<512> doc;
+      DeserializationError error = deserializeJson(doc, value);
+      if (error) {
+        Serial.print("deserializeJson() failed: ");
+        Serial.println(error.c_str());
+        return;
+      }
+
+      GaugeSettings settings;
+      settings.backgroundNormalColor = doc["backgroundNormalColor"] | s.backgroundNormalColor;
+      settings.backgroundWarningColor = doc["backgroundWarningColor"] | s.backgroundWarningColor;
+      settings.arcMainColor = doc["arcMainColor"] | s.arcMainColor;
+      settings.arcIndicatorColor = doc["arcIndicatorColor"] | s.arcIndicatorColor;
+      settings.fontColor = doc["fontColor"] | s.fontColor;
+      settings.currentFont = doc["currentFont"] | s.currentFont;
+      settings.currentBike = doc["currentBike"] | s.currentBike;
+      settings.maxiumSafeAngle = doc["maxiumSafeAngle"] | s.maxiumSafeAngle;
+
+      saveGaugeSettings(
+        settings.backgroundNormalColor.c_str(),
+        settings.backgroundWarningColor.c_str(),
+        settings.arcMainColor.c_str(),
+        settings.arcIndicatorColor.c_str(),
+        settings.fontColor.c_str(),
+        settings.currentFont.c_str(),
+        settings.currentBike.c_str(),
+        settings.maxiumSafeAngle
+      );
+
+      rebuildUIFromSettings();
     }
-
-    GaugeSettings settings;
-    settings.backgroundNormalColor = doc["backgroundNormalColor"] | "#313131";
-    settings.backgroundWarningColor = doc["backgroundWarningColor"] | "#800000C8";
-    settings.arcMainColor = doc["arcMainColor"] | "#004609D1";
-    settings.arcIndicatorColor = doc["arcIndicatorColor"] | "#FFFFFF73";
-    settings.fontColor = doc["fontColor"] | "#FFFFFF";
-    settings.currentFont = doc["currentFont"] | "marty-30";
-    settings.currentBike = doc["currentBike"] | "indian_scout";
-    settings.maxiumSafeAngle = doc["maxiumSafeAngle"] | 29.0f;
-
-    saveGaugeSettings(
-      settings.backgroundNormalColor.c_str(),
-      settings.backgroundWarningColor.c_str(),
-      settings.arcMainColor.c_str(),
-      settings.arcIndicatorColor.c_str(),
-      settings.fontColor.c_str(),
-      settings.currentFont.c_str(),
-      settings.currentBike.c_str(),
-      settings.maxiumSafeAngle
-    );
-
-    rebuildUIFromSettings();
   }
 };
 
@@ -261,14 +275,15 @@ void loop() {
   if (!boot_done) return;
 
   int16_t angle;
-  float accX;
-  float accY;
+
   float gyro[3], acc[3];
   unsigned int tim_count = 0;
   QMI8658_read_xyz(gyro, acc, &tim_count);
   angle = gyro[0] * -0.09;
 
+
   update_UI(angle);
+  check_and_set_max_angles(angle);
 
   if (deviceConnected) {
     struct SensorData {
@@ -280,7 +295,6 @@ void loop() {
     pAngleCharacteristic->notify();
   }
 
-  check_and_set_max_angles(angle, accX);
   
   
   delay(100);

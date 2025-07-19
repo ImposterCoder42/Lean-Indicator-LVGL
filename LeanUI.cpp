@@ -16,9 +16,6 @@ static const unsigned long HOLD_DURATION = 200;
 
 Preferences preferences;
 
-
-static int maxAngleThreshold = 29; // The Bikes Max Angle
-
 void update_UI(int angle) {
     GaugeSettings s = loadGaugeSettings();
     // Update Arc
@@ -31,9 +28,8 @@ void update_UI(int angle) {
     std::string full_label_as_str = angle_as_str + " DEG";
     const char* label_as_char = full_label_as_str.c_str();
     lv_label_set_text(label, label_as_char);
-
     // Style based on lean severity
-    if (abs(angle) > maxAngleThreshold) {
+    if (abs(angle) > s.maxiumSafeAngle) {
         // Preferences prefs;
         lv_obj_set_style_text_color(label, lv_color_hex(0xFF3B30), 0);  // Red
         lv_color_t backgroundWarningColor = hexToColor(s.backgroundWarningColor);
@@ -46,9 +42,9 @@ void update_UI(int angle) {
     }
 }
 
-void check_and_set_max_angles(int current_angle, float accX) {
+void check_and_set_max_angles(int current_angle) {
     if (current_angle < 0) {
-        if (current_angle < max_angle_left && accX > 14.0) {
+        if (current_angle < max_angle_left) {
             if (!candidateTimerRunning || current_angle < candidateMaxAngle) {
                 candidateMaxAngle = current_angle;
                 candidateStartTime = millis();
@@ -66,7 +62,7 @@ void check_and_set_max_angles(int current_angle, float accX) {
             candidateMaxAngle = 0;
         }
     } else if (current_angle > 0) {
-        if (current_angle > max_angle_right && accX > 14.0) {
+        if (current_angle > max_angle_right) {
             if (!candidateTimerRunning || current_angle > candidateMaxAngle) {
                 candidateMaxAngle = current_angle;
                 candidateStartTime = millis();

@@ -16,7 +16,7 @@ extern lv_obj_t* screen;
 void update_UI(int angle);
 
 // Angle Management
-void check_and_set_max_angles(int current_angle, float accX);
+void check_and_set_max_angles(int current_angle);
 void get_max_angles();
 void do_angle_reset();
 
