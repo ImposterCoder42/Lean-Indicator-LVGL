@@ -8,7 +8,7 @@
 int max_angle_left = 0;
 int max_angle_right = 0;
 
-// Internal tracking for 1-second hold
+
 static int candidateMaxAngle = 0;
 static unsigned long candidateStartTime = 0;
 static bool candidateTimerRunning = false;
@@ -18,19 +18,14 @@ Preferences preferences;
 
 void update_UI(int angle) {
     GaugeSettings s = loadGaugeSettings();
-    // Update Arc
     lv_arc_set_value(arc, angle);
-    // Update Image
     lv_img_set_angle(img, angle * 10);
 
-    // Format label text
     std::string angle_as_str = std::to_string(abs(angle));
     std::string full_label_as_str = angle_as_str + " DEG";
     const char* label_as_char = full_label_as_str.c_str();
     lv_label_set_text(label, label_as_char);
-    // Style based on lean severity
     if (abs(angle) > s.maxiumSafeAngle) {
-        // Preferences prefs;
         lv_obj_set_style_text_color(label, lv_color_hex(0xFF3B30), 0);  // Red
         lv_color_t backgroundWarningColor = hexToColor(s.backgroundWarningColor);
         lv_obj_set_style_bg_color(screen, backgroundWarningColor, LV_PART_MAIN | LV_STATE_DEFAULT);

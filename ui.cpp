@@ -64,8 +64,8 @@ void create_image(const GaugeSettings& s) {
     } else if (s.currentBike == "bike 3") {
       lv_img_set_src(img, &sport_red_blue_white);
       lv_obj_align(img, LV_ALIGN_CENTER, 0, -10);
-      lv_obj_set_size(img, 110 , 171);
-      lv_img_set_pivot(img, 110 / 2, 171);
+      lv_obj_set_size(img, 110 , 161);
+      lv_img_set_pivot(img, 110 / 2, 161);
     
     } else if (s.currentBike == "bike 4") {
       lv_img_set_src(img, &adventure_gray);
@@ -88,9 +88,9 @@ void create_image(const GaugeSettings& s) {
     // Smooth Rotate Anime
     lv_anim_t a;
     lv_anim_init(&a);
-    lv_anim_set_var(&a, img);  // The image object
+    lv_anim_set_var(&a, img);  
     lv_anim_set_values(&a, 0, 900);  // 0° to 90° (in tenths of a degree)
-    lv_anim_set_time(&a, 1000);  // Duration in milliseconds
+    lv_anim_set_time(&a, 1000);  // milliseconds
     lv_anim_set_exec_cb(&a, [](void * obj, int32_t v) {
         lv_img_set_angle((lv_obj_t *)obj, v);
     });

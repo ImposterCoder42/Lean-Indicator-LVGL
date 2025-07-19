@@ -78,8 +78,8 @@ class MySecurity : public BLESecurityCallbacks {
 class SettingsCallbacks : public BLECharacteristicCallbacks {
   void onWrite(BLECharacteristic* pSettingsCharacteristic) override {
     std::string value = pSettingsCharacteristic->getValue();
-    Serial.println("Received settings over BLE:");
-    Serial.println(value.c_str());
+    // Serial.println("Received settings over BLE:");
+    // Serial.println(value.c_str());
 
     if (value == "PR_RESET"){
       prefs.begin("lean_data", false);
@@ -97,8 +97,8 @@ class SettingsCallbacks : public BLECharacteristicCallbacks {
       StaticJsonDocument<512> doc;
       DeserializationError error = deserializeJson(doc, value);
       if (error) {
-        Serial.print("deserializeJson() failed: ");
-        Serial.println(error.c_str());
+        // Serial.print("deserializeJson() failed: ");
+        // Serial.println(error.c_str());
         return;
       }
 
@@ -255,7 +255,6 @@ void setup() {
   QMI8658_init();
   
   // // SCREEN BACKGROUND
-  
   lv_disp_set_theme(lv_disp_get_default(), NULL);
   screen = lv_scr_act();
   lv_obj_clean(screen);

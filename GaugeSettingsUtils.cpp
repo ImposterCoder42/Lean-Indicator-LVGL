@@ -90,21 +90,4 @@ void factoryResetUI () {
 }
 
 
-// TODO: get Flutter to grab these strings and store them for future use in dropdown menus
-const char* preLoadedFonts[] = { // Files Names
-  "marty",
-  "awergy",
-  "bloomira",
-  "super_crumble",
-  "wablo",
-};
-const int NUM_FONTS = sizeof(preLoadedFonts) / sizeof(preLoadedFonts[0]);
 
-const char* preLoadedBikes[] = { // Files Names
-  "indian_scout",
-  "adventure_gray",
-  "bagger_black",
-  "sport_green",
-  "sport_red_blue_white",
-};
-const int NUM_BIKES = sizeof(preLoadedBikes) / sizeof(preLoadedBikes[0]);

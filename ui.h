@@ -4,7 +4,6 @@
 #include <lvgl.h>
 #include "GaugeSettingsUtils.h"
 
-// External LVGL objects (you must define them in your main file)
 extern lv_obj_t* arc;
 extern lv_obj_t* img;
 extern lv_obj_t* label;
@@ -17,7 +16,6 @@ void create_image(const GaugeSettings& s);
 
 void create_label(const GaugeSettings& s); 
 
-// void create_UI(const GaugeSettings& settings);
 void create_UI();
 
 #endif
