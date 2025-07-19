@@ -103,14 +103,14 @@ class SettingsCallbacks : public BLECharacteristicCallbacks {
       }
 
       GaugeSettings settings;
-      settings.backgroundNormalColor = doc["backgroundNormalColor"] | s.backgroundNormalColor;
-      settings.backgroundWarningColor = doc["backgroundWarningColor"] | s.backgroundWarningColor;
-      settings.arcMainColor = doc["arcMainColor"] | s.arcMainColor;
-      settings.arcIndicatorColor = doc["arcIndicatorColor"] | s.arcIndicatorColor;
-      settings.fontColor = doc["fontColor"] | s.fontColor;
-      settings.currentFont = doc["currentFont"] | s.currentFont;
-      settings.currentBike = doc["currentBike"] | s.currentBike;
-      settings.maxiumSafeAngle = doc["maxiumSafeAngle"] | s.maxiumSafeAngle;
+      settings.backgroundNormalColor = doc["backgroundNormalColor"] | "#313131";
+      settings.backgroundWarningColor = doc["backgroundWarningColor"] | "#FF771616";
+      settings.arcMainColor = doc["arcMainColor"] | "#FF9A9A9A";
+      settings.arcIndicatorColor = doc["arcIndicatorColor"] | "#FF16DD16";
+      settings.fontColor = doc["fontColor"] | "#FFFFFF";
+      settings.currentFont = doc["currentFont"] | "marty";
+      settings.currentBike = doc["currentBike"] | "indian_scout";
+      settings.maxiumSafeAngle = doc["maxiumSafeAngle"] | 29.0f;
 
       saveGaugeSettings(
         settings.backgroundNormalColor.c_str(),
