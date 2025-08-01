@@ -181,6 +181,88 @@ lv_obj_t * arc;
 lv_obj_t * img;
 lv_obj_t* max_label;
 
+class CircularBuffer {
+public:
+    CircularBuffer(int size, float threshold = 69.0f)
+        : size(size), index(0), filled(false), lastValue(0.0f), threshold(threshold), hasLast(false) {
+        buffer = new float[size]();
+    }
+
+    ~CircularBuffer() {
+        delete[] buffer;
+    }
+
+    void add(float value) {
+        if (hasLast && fabs(value - lastValue) > threshold) {
+            value = lastValue;
+        }
+
+        buffer[index] = value;
+        lastValue = value;
+        hasLast = true;
+
+        index = (index + 1) % size;
+        if (index == 0) filled = true;
+    }
+
+    float average() const {
+        int count = filled ? size : index;
+        if (count == 0) return 0.0f;
+        float sum = 0.0f;
+        for (int i = 0; i < count; ++i) {
+            sum += buffer[i];
+        }
+        return sum / count;
+    }
+
+private:
+    float* buffer;
+    int size;
+    int index;
+    bool filled;
+    float lastValue;
+    float threshold;
+    bool hasLast;
+};
+
+class LowPassFilter {
+public:
+    LowPassFilter(float alpha) : alpha(alpha), initialized(false), lastValue(0.0f) {}
+
+    float filter(float newValue) {
+        if (!initialized) {
+            lastValue = newValue;
+            initialized = true;
+        } else {
+            lastValue = alpha * newValue + (1.0f - alpha) * lastValue;
+        }
+        return lastValue;
+    }
+
+private:
+    float alpha;
+    bool initialized;
+    float lastValue;
+};
+
+class LeanAngleProcessor {
+public:
+    LeanAngleProcessor(int bufferSize = 10, float alpha = 0.95f, float decayFactor = 0.98f)
+        : buffer(bufferSize), filter(alpha), decayFactor(decayFactor) {}
+
+    float process(float newReading) {
+        float filtered = filter.filter(newReading);
+        filtered *= decayFactor;
+        buffer.add(filtered);
+        return roundf(buffer.average());
+    }
+
+private:
+    CircularBuffer buffer;
+    LowPassFilter filter;
+    float decayFactor;
+};
+
 
 void setup() {
   Serial.begin(115200);
@@ -267,34 +349,44 @@ void setup() {
   Serial.println("Setup done");
 }
 
+
+LeanAngleProcessor leanProcessor(30, 0.69f, 0.98f);
+
+int i = 0;
 void loop() {
   lv_timer_handler();
   delay(5);
 
   if (!boot_done) return;
 
-  int16_t angle;
-
+  int16_t rawAngle;
+  
   float gyro[3], acc[3];
   unsigned int tim_count = 0;
   QMI8658_read_xyz(gyro, acc, &tim_count);
-  angle = gyro[0] * -0.09;
+  rawAngle = gyro[0] * -0.09;
 
+  int16_t angle = leanProcessor.process(rawAngle);
 
   update_UI(angle);
-  check_and_set_max_angles(angle);
+  check_and_set_max_angles(rawAngle);
 
-  if (deviceConnected) {
-    struct SensorData {
-      int16_t angle;
-    };
+  if (i == 5) {
+    if (deviceConnected) {
+      struct SensorData {
+        int16_t angle;
+      };
 
-    SensorData data = {angle};
-    pAngleCharacteristic->setValue((uint8_t*)&data, sizeof(data));
-    pAngleCharacteristic->notify();
+      SensorData data = {angle};
+      pAngleCharacteristic->setValue((uint8_t*)&data, sizeof(data));
+      pAngleCharacteristic->notify();
+    }
+    i = 0;
   }
 
+  i++;
+
   
   
-  delay(100);
+  delay(20);
 }
